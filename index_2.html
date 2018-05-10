@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+
 <style>
     body {
         font-family: Arial;
     }
 
+    * {
+        box-sizing: border-box;
+    }
+
     .axis,
     .axis path {
         fill: none;
-        stroke: white;
-        stroke-width: 2px;
+        stroke: #ACB849;
     }
 
     text {
@@ -20,7 +25,7 @@
     path {
         fill: none;
         stroke: blue;
-        ;
+        color: rgb(2, 83, 2);
     }
 
     .svg__wrapper {
@@ -63,46 +68,51 @@
 </style>
 
 <body>
-    <div class="svg__wrapper">
+    <svg id="scatter" width="500" height="500"></svg>
+
+    <!-- <div class="svg__wrapper">
         <div class="svg__label-left">
-            <h4>Impact</h4>
+            <h4>Grupa 1</h4>
         </div>
 
         <div class="svg__main_container">
 
             <div class="svg__labels-top">
                 <div class="svg__group-2">
-                    <h4>Likelihood</h4>
+                    <h4>Grupa 2</h4>
                 </div>
                 <div class="svg__parts-top">
-                    <div>cz 3</div>
-                    <div>cz 4</div>
+                    <div>Część 3</div>
+                    <div>Część 4</div>
                 </div>
             </div>
 
-            <svg id="scatter" width="500" height="500"></svg>
 
             <div class="svg__labels-bottom">
                 <div class="svg__parts-bottom">
-                    <div>cz 1</div>
-                    <div>cz 2</div>
+                    <div>Część 1</div>
+                    <div>Część 2</div>
                 </div>
             </div>
 
         </div>
 
-    </div>
+    </div> -->
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
 
     <script>
+
         var svg = d3.select("#scatter"),
             margin = {},
             width = +svg.attr("width"),
             height = +svg.attr("height"),
-            domainwidth = width;
-        domainheight = height;
+            domainwidth = width,
+            domainheight = height;
+        // labelsTop = document.querySelector(".svg__labels-top");
+
+        // labelsTop.style.width = width + "px";
+
 
 
         var x = d3.scaleLinear()
@@ -115,33 +125,28 @@
         var g = svg.append("g")
             .attr("transform", "translate(" + 0 + "," + 0 + ")");
 
-        g.append("rect")
-            .attr("width", width / 2)
-            .attr("height", height / 2)
-            .attr("fill", "#FFFBAF");
-
 
 
         g.append("rect")
             .attr("width", width / 2)
             .attr("height", height / 2)
-            .attr("fill", "#FFDBBA")
-            .attr("x", function () { return x(50); })
-            .attr("y", function () { return y(50); })
-
+            .attr("fill", "#e0e000")
         g.append("rect")
             .attr("width", width / 2)
             .attr("height", height / 2)
-            .attr("fill", "#DDFFCF")
-
-            .attr("y", function () { return y(50); })
-
+            .attr("x", 250)
+            .attr("fill", "#007000")
         g.append("rect")
             .attr("width", width / 2)
             .attr("height", height / 2)
-            .attr("fill", "#E5B3BF")
-            .attr("x", function () { return x(50); })
-            .attr("y", function () { return y(101); })
+            .attr("y", 250)
+            .attr("fill", "#b20000")
+        g.append("rect")
+            .attr("width", width / 2)
+            .attr("height", height / 2)
+            .attr("x", 250)
+            .attr("y", 250)
+            .attr("fill", "#e0e000")
 
 
         var url = `https://api.github.com/users/octocat`;
@@ -175,12 +180,6 @@
                 "answer": "Another answer",
                 "value": 75,
                 "consequence": 44
-            },
-            {
-                "question": "Activity Five",
-                "answer": "Another answer5",
-                "value": 35,
-                "consequence": 64
             }
         ]
 
@@ -201,8 +200,15 @@
                 .attr('x2', x(data[i + 1].consequence))
                 .attr('y2', y(data[i + 1].value));
 
-
         }
+
+        //line joining first and last dot
+        svg.append('line')
+            .style('stroke', 'grey')
+            .attr('x1', x(data[0].consequence))
+            .attr('y1', y(data[0].value))
+            .attr('x2', x(data[data.length - 1].consequence))
+            .attr('y2', y(data[data.length - 1].value));
 
         data.forEach(function (d) {
             d.consequence = d.consequence;
@@ -210,52 +216,20 @@
 
         });
 
-        var topLayer = svg.append('g');
 
-        topLayer.append("text")
-            .attr("x", function () { return x(13); })
-            .attr("y", function () { return y(95); })
-            .text("Emerging Trend")
-            .attr("dy", ".35em")
-            .style("font-weight", "700")
-            .style("fill", "#FFE60D")
 
-        topLayer.append("text")
-            .attr("x", function () { return x(72); })
-            .attr("y", function () { return y(43); })
-            .text("Issue")
-            .attr("dy", ".35em")
-            .style("font-weight", "700")
-            .style("fill", "#D06B47")
-
-        topLayer.append("text")
-            .attr("x", function () { return x(72); })
-            .attr("y", function () { return y(95); })
-            .text("Circle")
-            .attr("dy", ".35em")
-            .style("font-weight", "700")
-            .style("fill", "#D61132")
-
-        topLayer.append("text")
-            .attr("x", function () { return x(13); })
-            .attr("y", function () { return y(43); })
-            .text("Emerging Trend")
-            .attr("dy", ".35em")
-            .style("font-weight", "700")
-            .style("fill", "green")
-
-        topLayer.selectAll("circle")
+        g.selectAll("circle")
             .data(data)
             .enter().append("circle")
             .attr("class", "dot")
-            .attr("r", 6)
+            .attr("r", 4)
             .attr("cx", function (d) { return x(d.consequence); })
             .attr("cy", function (d) { return y(d.value); })
             .style("fill", function (d) {
-                if (d.value >= 50 && d.consequence <= 50) { return "#FFE60D" } // Top Left
-                else if (d.value >= 50 && d.consequence >= 50) { return "#D61132" } // Top Right
-                else if (d.value <= 50 && d.consequence >= 50) { return "#D06B47" } // Bottom Left
-                else { return "green" } //Bottom Right         
+                if (d.value >= 50 && d.consequence <= 50) { return "#ffff00" } // Top Left
+                else if (d.value >= 50 && d.consequence >= 50) { return "#00bf00" } // Top Right
+                else if (d.value <= 50 && d.consequence <= 50) { return "#ff0000" } // Bottom Left
+                else { return "#A72D73" } //Bottom Right         
             })
             .on("mouseover", function (d) {
                 console.log(d)
@@ -277,30 +251,19 @@
         g.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + y.range()[0] / 2 + ")")
-            .call(d3.axisBottom(x).tickValues([]));
+            .call(d3.axisBottom(x).ticks(0));
 
         g.append("g")
             .attr("class", "y axis")
             .attr("transform", "translate(" + x.range()[1] / 2 + ", 0)")
-            .call(d3.axisLeft(y).tickValues([]));
-
-        g.append("g")
-            .attr("class", "x vis-axis")
-            .style("fill", "black")
-            .attr("transform", "translate(0," + y.range()[0] + ")")
-            .call(d3.axisBottom(x).tickValues([]))
-            .attr("marker-end", "url(#arrowhead)");
-        g.append("g")
-            .attr("class", "y vis-axis")
-            .style("fill", "black")
-            .attr("transform", "translate(" + 0 + ", 0)")
-            .call(d3.axisLeft(y).tickValues([]))
-            .attr("marker-end", "url(#arrowhead)");
+            .call(d3.axisLeft(y).ticks(0));
 
         function padExtent(e, p) {
             if (p === undefined) p = 1;
             return ([e[0] - p, e[1] + p]);
         }
+
+        var svgWrapper = d3.select("body").append("div");
 
     </script>
 </body>
