@@ -68,8 +68,9 @@
 </style>
 
 <body>
+    <svg id="scatter" width="500" height="500"></svg>
 
-    <div class="svg__wrapper">
+    <!-- <div class="svg__wrapper">
         <div class="svg__label-left">
             <h4>Grupa 1</h4>
         </div>
@@ -86,7 +87,6 @@
                 </div>
             </div>
 
-            <svg id="scatter" width="500" height="500"></svg>
 
             <div class="svg__labels-bottom">
                 <div class="svg__parts-bottom">
@@ -97,7 +97,7 @@
 
         </div>
 
-    </div>
+    </div> -->
 
 
 
@@ -108,10 +108,10 @@
             width = +svg.attr("width"),
             height = +svg.attr("height"),
             domainwidth = width,
-            domainheight = height,
-            labelsTop = document.querySelector(".svg__labels-top");
+            domainheight = height;
+        // labelsTop = document.querySelector(".svg__labels-top");
 
-        labelsTop.style.width = width + "px";
+        // labelsTop.style.width = width + "px";
 
 
 
@@ -262,5 +262,8 @@
             if (p === undefined) p = 1;
             return ([e[0] - p, e[1] + p]);
         }
+
+        var svgWrapper = d3.select("body").append("div");
+
     </script>
 </body>
