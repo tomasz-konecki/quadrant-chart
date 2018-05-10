@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+
+<style>
+    body {
+        font-family: Arial;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .axis,
+    .axis path {
+        fill: none;
+        stroke: #ACB849;
+    }
+
+    text {
+        stroke: none;
+        fill: #666666;
+    }
+
+    path {
+        fill: none;
+        stroke: blue;
+        color: rgb(2, 83, 2);
+    }
+
+    .svg__wrapper {
+        margin: 30px;
+        display: flex;
+    }
+
+    .svg__labels-top,
+    .svg__labels-bottom {
+        text-align: center;
+    }
+
+    .svg__parts-top,
+    .svg__parts-bottom {
+        display: flex;
+
+    }
+
+    .svg__parts-top div,
+    .svg__parts-bottom div {
+        flex-basis: 50%;
+    }
+
+    .svg__labels-top h4 {
+        margin: 0;
+    }
+
+    .svg__label-left {
+        position: relative;
+        width: 50px;
+    }
+
+    .svg__label-left h4 {
+        transform: rotate(-90deg);
+        position: absolute;
+        width: 70px;
+        top: 250px;
+        left: -10px;
+    }
+</style>
+
+<body>
+
+    <div class="svg__wrapper">
+        <div class="svg__label-left">
+            <h4>Grupa 1</h4>
+        </div>
+
+        <div class="svg__main_container">
+
+            <div class="svg__labels-top">
+                <div class="svg__group-2">
+                    <h4>Grupa 2</h4>
+                </div>
+                <div class="svg__parts-top">
+                    <div>Część 3</div>
+                    <div>Część 4</div>
+                </div>
+            </div>
+
+            <svg id="scatter" width="500" height="500"></svg>
+
+            <div class="svg__labels-bottom">
+                <div class="svg__parts-bottom">
+                    <div>Część 1</div>
+                    <div>Część 2</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        var svg = d3.select("#scatter"),
+            margin = {},
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            domainwidth = width,
+            domainheight = height,
+            labelsTop = document.querySelector(".svg__labels-top");
+
+        labelsTop.style.width = width + "px";
+
+
+
+        var x = d3.scaleLinear()
+            .domain(padExtent([0, 100]))
+            .range(padExtent([0, domainwidth]));
+        var y = d3.scaleLinear()
+            .domain(padExtent([0, 100]))
+            .range(padExtent([domainheight, 0]));
+
+        var g = svg.append("g")
+            .attr("transform", "translate(" + 0 + "," + 0 + ")");
+
+
+
+        g.append("rect")
+            .attr("width", width / 2)
+            .attr("height", height / 2)
+            .attr("fill", "#e0e000")
+        g.append("rect")
+            .attr("width", width / 2)
+            .attr("height", height / 2)
+            .attr("x", 250)
+            .attr("fill", "#007000")
+        g.append("rect")
+            .attr("width", width / 2)
+            .attr("height", height / 2)
+            .attr("y", 250)
+            .attr("fill", "#b20000")
+        g.append("rect")
+            .attr("width", width / 2)
+            .attr("height", height / 2)
+            .attr("x", 250)
+            .attr("y", 250)
+            .attr("fill", "#e0e000")
+
+
+        var url = `https://api.github.com/users/octocat`;
+        d3.request(url)
+            .header("Content-Type", "application/json")
+            .get(function (data) {
+                console.log(JSON.parse(data.response));
+            })
+
+        var data = [
+            {
+                "question": "Activity One",
+                "answer": "Some answer",
+                "value": 51,
+                "consequence": 12
+            },
+            {
+                "question": "Activity Two",
+                "answer": "Some answer",
+                "value": 84,
+                "consequence": 85
+            },
+            {
+                "question": "Activity Three",
+                "answer": "Another answer",
+                "value": 44,
+                "consequence": 45
+            },
+            {
+                "question": "Activity Four",
+                "answer": "Another answer",
+                "value": 75,
+                "consequence": 44
+            }
+        ]
+
+        var tooltip = d3.select("body")
+            .append("div")
+            .style("position", "absolute")
+            .style("z-index", "10")
+            .style("visibility", "hidden")
+            .text("text")
+
+
+        var i;
+        for (i = 0; i < data.length - 1; i++) {
+            svg.append('line')
+                .style('stroke', 'grey')
+                .attr('x1', x(data[i].consequence))
+                .attr('y1', y(data[i].value))
+                .attr('x2', x(data[i + 1].consequence))
+                .attr('y2', y(data[i + 1].value));
+
+        }
+
+        //line joining first and last dot
+        svg.append('line')
+            .style('stroke', 'grey')
+            .attr('x1', x(data[0].consequence))
+            .attr('y1', y(data[0].value))
+            .attr('x2', x(data[data.length - 1].consequence))
+            .attr('y2', y(data[data.length - 1].value));
+
+        data.forEach(function (d) {
+            d.consequence = d.consequence;
+            d.value = d.value;
+
+        });
+
+
+
+        g.selectAll("circle")
+            .data(data)
+            .enter().append("circle")
+            .attr("class", "dot")
+            .attr("r", 4)
+            .attr("cx", function (d) { return x(d.consequence); })
+            .attr("cy", function (d) { return y(d.value); })
+            .style("fill", function (d) {
+                if (d.value >= 50 && d.consequence <= 50) { return "#ffff00" } // Top Left
+                else if (d.value >= 50 && d.consequence >= 50) { return "#00bf00" } // Top Right
+                else if (d.value <= 50 && d.consequence <= 50) { return "#ff0000" } // Bottom Left
+                else { return "#A72D73" } //Bottom Right         
+            })
+            .on("mouseover", function (d) {
+                console.log(d)
+                return (
+                    tooltip.html(d.question
+                        + "<br/> " + d.answer)
+                        .style("visibility", "visible"))
+
+            })
+            .on("mousemove", function (d) { return tooltip.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px"); })
+            .on("mouseout", function (d) {
+                return (
+                    tooltip.style("visibility", "hidden")
+                )
+            });
+
+
+
+        g.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + y.range()[0] / 2 + ")")
+            .call(d3.axisBottom(x).ticks(0));
+
+        g.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + x.range()[1] / 2 + ", 0)")
+            .call(d3.axisLeft(y).ticks(0));
+
+        function padExtent(e, p) {
+            if (p === undefined) p = 1;
+            return ([e[0] - p, e[1] + p]);
+        }
+    </script>
+</body>
